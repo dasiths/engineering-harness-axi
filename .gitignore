@@ -1,0 +1,11 @@
+node_modules/
+.harness/state/
+.github/hooks/engineering-harness.json
+.claude/settings.local.json
+.codex/hooks.json
+.opencode/plugins/engineering-harness.mjs
+coverage/
+*.log
+.env
+.env.*
+!.env.example
