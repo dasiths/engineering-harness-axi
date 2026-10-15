@@ -229,6 +229,12 @@ You do not need both integrations.
 See [agent integration details](docs/integrations.md) for client differences,
 privacy boundaries, and what was tested.
 
+To automatically run `harness verify` when an agent attempts to finish,
+follow [the completion-hook guide](docs/completion-hooks.md). It covers
+Copilot CLI, VS Code Local, Claude Code, Codex, and an advisory OpenCode
+alternative. A supplied adapter translates check failures into the host's
+hook protocol. It is not installed automatically.
+
 ## Sensors, gates, and backpressure
 
 * A sensor detects unmet expectations and reports scoped evidence.

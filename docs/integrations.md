@@ -13,6 +13,12 @@ Lifecycle hooks inject the current dashboard. They are not stop hooks and do
 not block agent completion. CI runs fresh required checks; repository rulesets
 must make that check mandatory if it is to gate merging.
 
+To run `harness verify` when work completes, use the separate
+[completion-hook guide](completion-hooks.md). It includes a tested adapter,
+per-client configurations, bounded correction attempts, and the distinction
+between completion and session-end events. These hooks are manual opt-in;
+`setup` continues to install only the startup/lifecycle integrations below.
+
 ## Explicit setup
 
 ```bash
