@@ -21,7 +21,7 @@ export default defineSensor({
       args: ["--import", "tsx", "--test", "--test-reporter", "junit", ...files]
     });
     try {
-      return parseJUnit(result.stdout, result.code);
+      return parseJUnit(result.stdout, result.code, files);
     } catch (error) {
       throw toolError(error instanceof Error ? error.message : "Invalid application test evidence", result.log);
     }

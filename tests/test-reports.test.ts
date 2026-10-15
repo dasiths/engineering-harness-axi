@@ -29,6 +29,8 @@ test("Node JUnit interprets assertions, escaped details, nested suites, and skip
 });
 
 test("JUnit rejects no tests, incomplete/duplicate totals, exit mismatch, cancellations and unsafe XML", () => {
+  assert.throws(() => parseJUnit(junit('<testcase name="/repo/tests/empty.test.ts"/>'), 0, ["/repo/tests/empty.test.ts"]), /No declared/);
+  assert.throws(() => parseJUnit(junit('<testcase name="/repo/tests/empty.test.ts" file="/repo/tests/empty.test.ts"/>'), 0), /No declared/);
   for (const [text, code] of [
     [junit("", { tests: 0, pass: 0 }), 0],
     ["<testsuites><testcase name=\"a\"/></testsuites>", 0],

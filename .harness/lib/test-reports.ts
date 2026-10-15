@@ -35,7 +35,7 @@ const suite: z.ZodType<Suite> = z.lazy(() => z.object({
   testsuite: z.array(suite).optional()
 }));
 
-export function parseJUnit(text: string, exitCode: number): Observation {
+export function parseJUnit(text: string, exitCode: number, testFiles: readonly string[] = []): Observation {
   const report = z.object({ testsuites: suite }).parse(xml(text));
   const cases: z.infer<typeof junitCase>[] = [];
   function visit(current: Suite): void {
@@ -51,7 +51,10 @@ export function parseJUnit(text: string, exitCode: number): Observation {
     counters[key] = Number(matches[0]![1]);
   }
   const executed = cases.filter(item => !item.skipped?.length);
-  if (!executed.length || executed.some(item => item.file === item.name)) throw new Error("No declared application tests executed in one or more test files");
+  // Node 22's file-level placeholder lacks the file attribute that Node 24 emits.
+  if (!executed.length || executed.some(item => item.file === item.name || testFiles.includes(item.name))) {
+    throw new Error("No declared application tests executed in one or more test files");
+  }
   if (counters.cancelled || cases.some(item => item.error?.length)) throw new Error("Application tests were cancelled or reported execution errors");
   const failed = executed.filter(item => item.failure?.length);
   if (counters.tests !== cases.length || counters.fail !== failed.length ||
