@@ -5,7 +5,7 @@ import test from "node:test";
 import { source } from "./helpers.ts";
 
 test("documentation has metadata and resolves local file links", async () => {
-  for (const name of ["README.md", "AGENTS.md", "docs/extending.md", "docs/axi.md", "docs/integrations.md", ".agents/skills/engineering-harness/SKILL.md"]) {
+  for (const name of ["README.md", "AGENTS.md", "docs/extending.md", "docs/axi.md", "docs/integrations.md", "examples/dotnet/README.md", ".agents/skills/engineering-harness/SKILL.md"]) {
     const file = join(source, name);
     const text = await readFile(file, "utf8");
     assert.match(text, /^---\n/);

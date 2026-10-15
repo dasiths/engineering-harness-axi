@@ -1,0 +1,11 @@
+{
+  "extends": "./src/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "noEmitOnError": true,
+    "rootDir": "./src",
+    "outDir": "./.harness/state/build",
+    "declaration": true,
+    "incremental": false
+  }
+}

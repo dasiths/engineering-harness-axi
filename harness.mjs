@@ -9,8 +9,8 @@ if (args.length === 1 && ["-v", "-V", "--version"].includes(args[0])) {
   console.log(VERSION);
 } else {
   const [major, minor] = process.versions.node.split(".").map(Number);
-  if (major < 22 || (major === 22 && minor < 12)) {
-    console.log('status: error\nerror: "Node.js 22.12 or later is required"\nhelp: "Install a supported Node.js release, then rerun ./harness doctor"');
+  if (major < 22 || major === 23 || (major === 22 && minor < 13)) {
+    console.log('status: error\nerror: "Node.js 22.13+ or 24+ is required"\nhelp: "Install a supported Node.js release, then rerun ./harness doctor"');
     process.exitCode = 1;
   } else {
     const require = createRequire(import.meta.url);

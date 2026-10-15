@@ -9,7 +9,7 @@ test("home is live content; doctor and help work from a nested directory", async
   const result = await command(root, [], { cwd: join(root, "src/api") });
   assert.equal(result.code, 0, result.stdout);
   assert.match(result.stdout, /not_run/);
-  assert.equal(data(result.stdout).sensors_total, 2);
+  assert.equal(data(result.stdout).sensors_total, 6);
   assert.match(result.stdout, /bin:/);
   assert.equal((await command(root, ["doctor"])).code, 0);
   for (const args of [["--help"], ["sensors", "--help"], ["sensors", "run", "--help"]]) {
@@ -39,7 +39,7 @@ test("drop-in commands and sensors need no registry edits", async t => {
   assert.equal((await command(root, ["sensors", "run", "readme"])).code, 0);
   assert.match((await command(root, ["sensors", "explain", "readme"])).stdout, /DOC1/);
   const policy = JSON.parse(await readFile(join(root, ".harness/config.json"), "utf8"));
-  assert.deepEqual(policy.requiredSensors, ["architecture", "typecheck"]);
+  assert.deepEqual(policy.requiredSensors, ["architecture", "typecheck", "lint", "test", "build"]);
 });
 
 test("unknown flags, extra arguments, bad field selection and missing arguments never run a sensor", async t => {

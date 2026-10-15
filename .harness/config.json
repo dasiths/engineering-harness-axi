@@ -1,3 +1,3 @@
 {
-  "requiredSensors": ["architecture", "typecheck"]
+  "requiredSensors": ["architecture", "typecheck", "lint", "test", "build"]
 }

@@ -21,6 +21,7 @@ export async function sensorCatalogue(context: Context): Promise<Data[]> {
     return {
       name: sensor.name, description: sensor.definition.description, status,
       scope: sensor.definition.scope,
+      prerequisites: sensor.definition.prerequisites ?? [],
       findings: last && status !== "stale" ? last.findings.length : null,
       lastRun: last?.recordedAt ?? null
     };

@@ -36,7 +36,7 @@ not an independently certified integration or a hardened policy boundary.
 
 ## Start in two minutes
 
-Use Node.js 22.12 or later; Node.js 24 is recommended. Clone a trusted copy
+Use Node.js 22.13+ or 24+; Node.js 24 is recommended. Clone a trusted copy
 and review it before running repository code.
 
 ```bash
@@ -87,6 +87,38 @@ Unknown, stale, failed, and successful evidence are distinct states.
 The CLI's normal data and errors use [TOON](https://toonformat.dev/) on stdout.
 Help is concise text; version flags print only the version.
 
+## Included sensors
+
+| Sensor | Tool or evidence | Required by default |
+|--------|------------------|---------------------|
+| `architecture` | Resolved TypeScript dependencies | Yes |
+| `typecheck` | TypeScript compiler diagnostics, without emitting | Yes |
+| `lint` | ESLint JSON report for application source | Yes |
+| `test` | Node application tests and a validated JUnit report | Yes |
+| `build` | Fresh JavaScript and declaration artifacts from TypeScript | Yes |
+| `architecture-dotnet` | Fresh .NET build, NetArchTest, and a validated TRX report | No |
+
+```bash
+./harness sensors run lint
+./harness sensors run test
+./harness sensors run build
+./harness sensors explain architecture-dotnet
+```
+
+The test sensor runs only [application tests](tests/application), not the
+harness self-tests or `npm run check`. This avoids recursively invoking
+`verify`. Warnings from lint and skipped application tests require correction.
+No tests, empty scope, mismatched counts, missing reports, timed-out tools, and
+failed tool startup are errors, not passing evidence.
+
+The shared [process runner](.harness/lib/process.ts) uses argument arrays,
+non-interactive execution, time/output bounds, cancellation, and local
+diagnostic logs. The adapters interpret reports; a nonzero exit alone cannot
+distinguish a legitimate finding from a broken tool.
+
+`doctor` lists declared external prerequisites without installing or probing
+them. The optional .NET sensor does not run during default `verify`.
+
 ## Try the architecture-fitness scenario
 
 The sample API consists of controller-style functions, not a running web server:
@@ -133,6 +165,32 @@ imports through barrel re-exports. It checks direct module dependencies;
 it is not whole-program data-flow analysis or a semantic judge of whether
 a responsibility belongs in the right layer. Computed module loading and
 unresolved/type-invalid source produce an error rather than a green result.
+
+## Run the blog's .NET architecture example
+
+The [optional .NET companion](examples/dotnet/README.md) implements the
+NetArchTest controller rule from
+[Refining Inferential Sensors in Coding Agent Harnesses](https://dasith.me/2026/06/20/refining-inferential-sensors/).
+It is a separate layered .NET 10 sample, not a replacement for the Node-only
+quick start.
+
+With the .NET 10 SDK on PATH:
+
+```bash
+./harness sensors run architecture-dotnet
+npm run test:dotnet
+```
+
+The sensor builds current source with locked NuGet dependencies, then runs
+architecture tests against that exact build. It checks the rule executed and
+that result counts agree. Broken builds and test setup failures produce
+`status: error`; a confirmed dependency violation produces `status: fail`
+with `ARCH001` and the offending types.
+
+The companion includes good/bad controller variants and tests for nested
+namespace selection. To make it mandatory in a .NET repository, explicitly
+add `architecture-dotnet` to the reviewed required-sensor policy. It is
+exercised in a separate CI job so default Node users do not need the SDK.
 
 ## Add your own commands and sensors
 
@@ -202,6 +260,7 @@ Ignored local state lives under `.harness/state/`:
 
 * Immutable run reports and latest evidence, fingerprinted against repository files
 * JSONL events for command duration/outcome and sensor observations
+* Bounded subprocess stdout/stderr and fresh build/test artifacts under `tools/`
 * Minimal session-start/end metadata when an integration is enabled
 
 ```bash
@@ -212,9 +271,13 @@ Telemetry failures are investigation signals. A useful failing test is not
 necessarily waste. Look for repeated setup confusion, ineffective repairs,
 or duplicated discovery before changing a command or instruction.
 
-Nothing is uploaded. Prompts, transcripts, source contents, tool arguments,
-and account names are not recorded in telemetry. Finding reports contain
-repository-relative locations and diagnostic messages. Review them before sharing.
+The harness uploads no telemetry. Wrapped tools may access package feeds,
+and application tests can perform whatever I/O their code requests.
+Prompts, transcripts, source contents, tool arguments, and account names are
+not recorded in telemetry. Finding reports contain locations and diagnostic
+messages. Raw tool logs can include absolute paths, source snippets, or data
+printed by tests. They remain ignored local files; review before sharing and
+remove them according to your team's retention policy.
 This sample uses local JSONL, not an OpenTelemetry exporter; connect it to
 your organisation's collector only after deciding retention and redaction policy.
 
@@ -223,6 +286,9 @@ your organisation's collector only after deciding retention and redaction policy
 ```bash
 npm run typecheck
 npm test
+npm run test:app
+npm run lint
+npm run build
 npm run skill:generate
 npm run skill:check
 ./harness verify
@@ -232,7 +298,8 @@ npm run skill:check
 skill content fails CI.
 
 The tests exercise real CLI subprocesses, extension discovery, rule violations,
-staleness, malformed output, truncation, version startup, and integration
+staleness, malformed output, truncation, version startup, time/output limits,
+lint/test/build failures, and integration
 configuration/bridge contracts. Agent integrations are not end-to-end certified
 against live client sessions.
 

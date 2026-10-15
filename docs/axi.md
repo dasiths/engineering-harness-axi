@@ -43,7 +43,14 @@ or a promise of identical behaviour across all agent-client versions.
 * Command validation and definition errors are explicit. Failed execution is not
   downgraded to an empty successful report.
 * There is no automatic dependency installation or automatic repair. Prerequisite
-  failures tell the user how to bootstrap the repository.
+  failures tell the user how to bootstrap the repository. The optional .NET
+  build restores its locked NuGet packages; the user installs the SDK separately.
+* The Node quick start requires Node 22.13+ or 24+ to use a supported ESLint
+  release. Default verification runs five Node-only sensors. The sixth,
+  `architecture-dotnet`, is optional and requires .NET 10.
+* Subprocess output and report formats are validated before observations are
+  accepted. Nonzero exit codes alone do not count as a confirmed violation.
+  Tool logs remain local and may contain more sensitive detail than telemetry.
 
 No token-savings percentage is asserted for this sample. Output economy and
 end-to-end task outcomes need measurement in the user's actual workflow.

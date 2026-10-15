@@ -155,6 +155,52 @@ Helpers belong in `.harness/lib`, not beside discoverable extension modules.
 Module loading is trusted code execution; review contributions before running
 even `--help`. Extensions must remain side-effect-free during import.
 
+## Wrap an existing tool instead of rebuilding it
+
+Use [the shared process runner](../.harness/lib/process.ts):
+
+```typescript
+import { runTool, toolError } from "../lib/process.ts";
+
+const result = await runTool({
+  root,
+  label: "my-check",
+  executable: process.execPath,
+  args: [toolScript, "--format", "json"],
+  timeoutMs: 30000,
+  maxBytes: 2 * 1024 * 1024,
+  signal
+});
+
+if (![0, 1].includes(result.code)) {
+  throw toolError("The check could not complete", result.log);
+}
+// Validate the tool's report, scope and exit code together before returning observations.
+```
+
+`root`, `toolScript`, and an optional `AbortSignal` come from your adapter.
+The runner does not assume exit 1 means a violation: the adapter must confirm
+that with a valid report. For example, ESLint's configuration failure is an
+execution error, whereas a JSON report containing lint-rule violations is a
+completed check with findings.
+
+The runner returns bounded stdout/stderr and the diagnostic log directory.
+Timeouts, cancellation, output overflow and failed startup throw explicit errors.
+On POSIX, cancellation terminates the invocation's process group; on Windows,
+it invokes `taskkill` for that process tree. Tools must not daemonize into
+independent sessions. No interactive stdin is available.
+
+Use `toolDirectory(root, label)` for fresh output under `.harness/state/tools`.
+Never reuse a prior test report or build output to manufacture a pass.
+Keep source and policy inputs outside this ignored directory.
+
+See the [lint](../.harness/sensors/lint.ts), [test](../.harness/sensors/test.ts),
+[build](../.harness/sensors/build.ts), and
+[.NET architecture](../.harness/sensors/architecture-dotnet.ts) adapters.
+Optional `prerequisites` metadata is shown by `doctor`, `sensors explain`, or
+`sensors --fields name,prerequisites`. It does not install anything or change
+the required-sensor policy.
+
 ## Validate and share
 
 ```bash

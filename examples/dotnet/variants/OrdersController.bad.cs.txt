@@ -1,0 +1,8 @@
+using Shop.Infrastructure;
+
+namespace Shop.Api.Controllers;
+
+public sealed class OrdersController(OrdersRepository repository)
+{
+    public Order? Get(string id) => repository.Find(id);
+}

@@ -13,6 +13,7 @@ export default defineCommand({
     const truncated = !options.full && sensor.definition.rules.some(rule => Object.values(rule).some(value => value.length > 1000));
     return { data: {
       sensor: sensor.name, description: sensor.definition.description, scope: sensor.definition.scope, rules,
+      prerequisites: sensor.definition.prerequisites ?? [],
       ...(truncated ? { help: [`./harness sensors explain ${sensor.name} --full`] } : {})
     } };
   }

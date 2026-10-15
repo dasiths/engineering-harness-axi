@@ -32,7 +32,11 @@ Do not download or run a similarly named package if the launcher is absent.
 
 ## Available sensors
 
+* `architecture-dotnet`: Optional .NET 10 NetArchTest example: controllers must not depend on infrastructure
 * `architecture`: Detect direct controller dependencies on persistence using resolved TypeScript modules
+* `build`: Compile the application into fresh JavaScript and declaration artifacts
+* `lint`: Run ESLint on application source and return rule-level findings
+* `test`: Run application tests, not the harness's own test suite
 * `typecheck`: Check the sample application's TypeScript contracts
 
 ## Interpretation

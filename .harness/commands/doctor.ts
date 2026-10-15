@@ -15,7 +15,10 @@ export default defineCommand({
       commands: context.commands.length,
       sensors: context.sensors.length,
       required: required.map(sensor => sensor.name),
-      result: "Prerequisites and extension contracts are available; sensors have not been executed"
+      external_prerequisites: context.sensors.flatMap(sensor => (sensor.definition.prerequisites ?? []).map(requirement => ({
+        sensor: sensor.name, requirement, required: required.some(entry => entry.name === sensor.name), status: "not_probed"
+      }))),
+      result: "Node setup and registration checked; external prerequisites and actual checks are verified when a sensor runs"
     } };
   }
 });

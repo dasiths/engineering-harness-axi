@@ -7,7 +7,7 @@ export default defineCommand({
   examples: ["./harness sensors", "./harness sensors --fields name,scope,status --full"],
   options: listOptions,
   async run(context, _args, options) {
-    const allowed = ["name", "description", "status", "scope", "findings", "lastRun"];
+    const allowed = ["name", "description", "status", "scope", "findings", "lastRun", "prerequisites"];
     listRows([], ["name", "description", "status"], allowed, options);
     const rows = await sensorCatalogue(context);
     const list = listRows(rows, ["name", "description", "status"], allowed, options);

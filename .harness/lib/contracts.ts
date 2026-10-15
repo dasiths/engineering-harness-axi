@@ -50,6 +50,7 @@ export const commandSchema = z.object({
 export const sensorSchema = z.object({
   description: z.string().min(1),
   scope: z.string().min(1),
+  prerequisites: z.array(z.string().min(1)).optional(),
   rules: z.array(z.object({
     id: z.string().min(1),
     expectation: z.string().min(1),

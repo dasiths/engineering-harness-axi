@@ -20,10 +20,10 @@ export async function fixture(t: TestContext): Promise<string> {
   return root;
 }
 
-export function command(root: string, args: string[], options: { cwd?: string; input?: string; entry?: string } = {}): Promise<{ code: number; stdout: string; stderr: string }> {
+export function command(root: string, args: string[], options: { cwd?: string; input?: string; entry?: string; env?: NodeJS.ProcessEnv; timeout?: number } = {}): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     const child = execFile(process.execPath, [options.entry ?? join(root, "harness.mjs"), ...args], {
-      cwd: options.cwd ?? root, timeout: 30000, maxBuffer: 4 * 1024 * 1024
+      cwd: options.cwd ?? root, env: options.env ?? process.env, timeout: options.timeout ?? 60000, maxBuffer: 4 * 1024 * 1024
     }, (error, stdout, stderr) => {
       if (error && typeof error.code !== "number") {
         reject(error);

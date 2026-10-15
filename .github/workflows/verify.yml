@@ -22,3 +22,20 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+
+  dotnet-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - run: npm ci
+      - run: npm run test:dotnet
+      - run: node harness.mjs sensors run architecture-dotnet
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
